@@ -3,7 +3,7 @@ from fastapi import FastAPI
 from app import websocket, strategyroute
 
 app = FastAPI()
-
+##fatih
 
 @app.get("/")
 async def root():
