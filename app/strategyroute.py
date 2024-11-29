@@ -2,6 +2,7 @@ from fastapi import APIRouter, WebSocket, WebSocketDisconnect, HTTPException
 
 from app.strategy_request import StrategyRequest
 from app.strategy_service import StrategyService
+from app.StrategyRequestWithBalance import StrategyRequestWithBalance
 import json
 import  pandas as pd
 
@@ -71,4 +72,69 @@ async def generate_signals(request: StrategyRequest):
         }
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Hata: {e}")
+
+# @router.post("/strategy/generate_balance_signal")
+# async def generate_balance_signal(request: StrategyRequestWithBalance):
+#     """
+#     Kullanıcıdan gelen sembol, interval, indikatör bilgileri ve bakiye ile sinyalleri üretir.
+#     """
+#     try:
+#         # Tarihsel veriyi al
+#         price_data = strategy_service.get_historical_data(request.symbol, request.interval)
+#         if not price_data:  # Eğer liste boşsa
+#             raise HTTPException(status_code=400, detail="Yeterli veri bulunamadı.")
+#
+#         # Listeyi DataFrame'e dönüştür
+#         df = pd.DataFrame(price_data, columns=["timestamp", "close"])
+#         df["close"] = pd.to_numeric(df["close"])
+#         df["timestamp"] = pd.to_datetime(df["timestamp"], unit="ms")
+#
+#         # İndikatörlere göre sinyalleri ve bakiye ile kararları hesapla
+#         signals_with_balance = strategy_service.generate_signal_with_balance(df, request.indicators, request.balance)
+#         if not signals_with_balance:
+#             raise HTTPException(status_code=400, detail="Sinyal hesaplanamadı.")
+#
+#         return {
+#             "symbol": request.symbol,
+#             "signals_with_balance": signals_with_balance,
+#         }
+#     except Exception as e:
+#         raise HTTPException(status_code=500, detail=f"Hata: {e}")
+@router.post("/strategy/generate_balance_signal")
+async def generate_balance_signal(request: StrategyRequestWithBalance):
+    """
+    Kullanıcıdan gelen sembol, interval, indikatör bilgileri ve bakiye ile sinyalleri üretir.
+    """
+    try:
+        # Tarihsel veriyi al
+        price_data = strategy_service.get_historical_data(request.symbol, request.interval)
+        if not price_data:  # Eğer liste boşsa
+            raise HTTPException(status_code=400, detail="Yeterli veri bulunamadı.")
+
+        # Listeyi DataFrame'e dönüştür
+        df = pd.DataFrame(price_data, columns=["timestamp", "close"])
+        df["close"] = pd.to_numeric(df["close"])
+        df["timestamp"] = pd.to_datetime(df["timestamp"], unit="ms")
+
+        # İndikatörlere göre sinyalleri ve bakiye ile kararları hesapla
+        signals_with_balance = strategy_service.generate_signal_with_balance(
+            price_data=df,
+            indicators=request.indicators,
+            balance=request.balance
+        )
+        if not signals_with_balance:
+            raise HTTPException(status_code=400, detail="Sinyal hesaplanamadı.")
+
+        # Güncellenmiş bakiye ve sinyaller döndürülür
+        updated_balance = signals_with_balance.pop("new_balance", request.balance)  # Güncel bakiye kontrolü
+
+        return {
+            "symbol": request.symbol,
+            "signals": signals_with_balance,
+            "updated_balance": updated_balance,  # Güncellenmiş bakiye
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Hata: {e}")
+
+
 

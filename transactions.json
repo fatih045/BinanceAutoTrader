@@ -1,0 +1,63 @@
+[
+    {
+        "timestamp": "2024-11-29 19:02:00",
+        "decision": "sell",
+        "balance": 1000.0,
+        "quantity": null
+    },
+    {
+        "timestamp": "2024-11-29 19:02:00",
+        "decision": "sell",
+        "balance": 1000.0,
+        "quantity": null
+    },
+    {
+        "timestamp": "2024-11-29 19:03:00",
+        "decision": "hold",
+        "balance": 1000.0
+    },
+    {
+        "timestamp": "2024-11-29 19:06:00",
+        "decision": "sell",
+        "balance": 1000.0,
+        "quantity": null
+    },
+    {
+        "timestamp": "2024-11-29 19:09:00",
+        "decision": "sell",
+        "balance": 5000.0,
+        "quantity": null
+    },
+    {
+        "timestamp": "2024-11-29 19:21:00",
+        "decision": "hold",
+        "balance": 5000.0
+    },
+    {
+        "timestamp": "2024-11-29 19:23:00",
+        "decision": "hold",
+        "balance": 5000.0
+    },
+    {
+        "timestamp": "2024-11-29 19:23:00",
+        "decision": "hold",
+        "balance": 5000.0
+    },
+    {
+        "timestamp": "2024-11-29 19:23:00",
+        "decision": "hold",
+        "balance": 5000.0
+    },
+    {
+        "timestamp": "2024-11-29 19:24:00",
+        "decision": "sell",
+        "balance": 5000.0,
+        "quantity": null
+    },
+    {
+        "timestamp": "2024-11-29 19:27:00",
+        "decision": "sell",
+        "balance": 5000.0,
+        "quantity": null
+    }
+]
