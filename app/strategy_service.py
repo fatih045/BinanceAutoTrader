@@ -4,6 +4,9 @@ import ta
 import logging
 import time
 
+import app
+
+
 # Logger yapılandırması
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -122,6 +125,7 @@ class StrategyService:
         except Exception as e:
             logger.error(f"Sinyal üretim hatası: {e}")
         return None
+
 
     def generate_final_decision(self, signals: dict):
         """
