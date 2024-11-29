@@ -96,6 +96,25 @@ class StrategyService:
                 )
                 signals["macd_signal"] = "buy" if macd.macd().iloc[-1] > macd.macd_signal().iloc[-1] else "sell"
 
+            # Bollinger Bands
+            if "bollinger_bands" in indicators:
+                bb_params = indicators["bollinger_bands"]
+                if not all(key in bb_params for key in ["period", "std_dev"]):
+                    raise ValueError("Bollinger Bands parametreleri eksik: period ve std_dev gerekli.")
+                bb = ta.volatility.BollingerBands(df["close"], window=bb_params["period"], window_dev=bb_params["std_dev"])
+                upper_band = bb.bollinger_hband()
+                lower_band = bb.bollinger_lband()
+                if df["close"].iloc[-1] > upper_band.iloc[-1]:
+                    signals["bollinger_bands_signal"] = "sell"
+                elif df["close"].iloc[-1] < lower_band.iloc[-1]:
+                    signals["bollinger_bands_signal"] = "buy"
+                else:
+                    signals["bollinger_bands_signal"] = "hold"
+
+            # Nihai Alım-Satım Kararı
+            decision = self.generate_final_decision(signals)
+            signals["final_decision"] = decision
+
             return signals
 
         except ValueError as e:
@@ -103,3 +122,19 @@ class StrategyService:
         except Exception as e:
             logger.error(f"Sinyal üretim hatası: {e}")
         return None
+
+    def generate_final_decision(self, signals: dict):
+        """
+        Tüm sinyallerden genel bir alım-satım kararı üretir.
+        """
+        buy_signals = sum(1 for signal in signals.values() if signal == "buy")
+        sell_signals = sum(1 for signal in signals.values() if signal == "sell")
+        hold_signals = sum(1 for signal in signals.values() if signal == "hold")
+
+        # Strateji: Alım-Satım-Hold mantığı
+        if buy_signals > sell_signals and buy_signals >= hold_signals:
+            return "buy"
+        elif sell_signals > buy_signals and sell_signals >= hold_signals:
+            return "sell"
+        else:
+            return "hold"
